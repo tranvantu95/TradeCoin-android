@@ -1,6 +1,5 @@
 package com.ccs.app.tradecoin.service;
 
-import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
@@ -9,14 +8,13 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.media.RingtoneManager;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
 
-import com.ccs.app.tradecoin.MainActivity;
+import com.ccs.app.tradecoin.activity.MainActivity;
 import com.ccs.app.tradecoin.R;
 
 public class NotificationService extends Service {
