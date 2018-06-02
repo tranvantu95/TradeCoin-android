@@ -6,6 +6,7 @@ import android.arch.paging.DataSource;
 import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Delete;
 import android.arch.persistence.room.Insert;
+import android.arch.persistence.room.OnConflictStrategy;
 import android.arch.persistence.room.Query;
 import android.arch.persistence.room.Update;
 import android.support.annotation.MainThread;
@@ -29,8 +30,8 @@ public abstract class NotifyDao implements BaseDao<Notify> {
     private static final ExecutorService executor = AppDatabase.executor;
 
     @MainThread
-    @Query("SELECT * FROM Notify ORDER BY id DESC")
-    public abstract DataSource.Factory<Integer, NotifyItem> getAllDESC();
+    @Query("SELECT * FROM Notify ORDER BY time DESC")
+    public abstract DataSource.Factory<Integer, NotifyItem> getAllByTime();
 
     @WorkerThread
     @Query("SELECT * FROM Notify")
@@ -41,7 +42,7 @@ public abstract class NotifyDao implements BaseDao<Notify> {
     public abstract int _getCount();
 
     @WorkerThread
-    @Insert//(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     public abstract Long[] _insertAll(Notify... notifies);
 
     @WorkerThread

@@ -14,6 +14,10 @@ public class Notify {
 
     private String message;
 
+    private long time;
+
+    private boolean read;
+
     public long getId() {
         return id;
     }
@@ -36,5 +40,21 @@ public class Notify {
 
     public void setMessage(String message) {
         this.message = message;
+    }
+
+    public long getTime() {
+        return time;
+    }
+
+    public void setTime(long time) {
+        this.time = time;
+    }
+
+    public boolean isRead() {
+        return read;
+    }
+
+    public void setRead(boolean read) {
+        this.read = read;
     }
 }

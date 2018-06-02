@@ -11,10 +11,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.ccs.app.tradecoin.item.BaseItem;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import com.ccs.app.tradecoin.item.BaseItem;
 
 public abstract class ListAdapter<Item, VH extends ListAdapter.ViewHolder<Item, ?>>
         extends PagedListAdapter<Item, VH> {
@@ -54,9 +54,9 @@ public abstract class ListAdapter<Item, VH extends ListAdapter.ViewHolder<Item, 
 
     private List<Item> items = new ArrayList<>();
 
-    private OnItemClickListener onItemClickListener;
+    private OnItemClickListener<Item> onItemClickListener;
 
-    public ListAdapter(int mode, @NonNull OnItemClickListener onItemClickListener, @NonNull DiffUtil.ItemCallback<Item> diffCallback) {
+    public ListAdapter(int mode, @NonNull OnItemClickListener<Item> onItemClickListener, @NonNull DiffUtil.ItemCallback<Item> diffCallback) {
         super(diffCallback);
         this.mode = mode;
         this.onItemClickListener = onItemClickListener;
@@ -85,6 +85,7 @@ public abstract class ListAdapter<Item, VH extends ListAdapter.ViewHolder<Item, 
     }
 
     public void setMode(int mode) {
+        if(this.mode == mode) return;
         this.mode = mode;
         notifyDataSetChanged();
     }
@@ -102,12 +103,16 @@ public abstract class ListAdapter<Item, VH extends ListAdapter.ViewHolder<Item, 
         }
     }
 
-    public OnItemClickListener getOnItemClickListener() {
+    public OnItemClickListener<Item> getOnItemClickListener() {
         return onItemClickListener;
     }
 
-    public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
+    public void setOnItemClickListener(OnItemClickListener<Item> onItemClickListener) {
         this.onItemClickListener = onItemClickListener;
+    }
+
+    protected void onItemClick(RecyclerView.ViewHolder viewHolder, View view, @Nullable Item item, int position) {
+        onItemClickListener.onItemClick(viewHolder, view, item, position);
     }
 
     @NonNull
@@ -154,11 +159,15 @@ public abstract class ListAdapter<Item, VH extends ListAdapter.ViewHolder<Item, 
 
         @Override
         public void onClick(View view) {
-            adapter.getOnItemClickListener().onItemClick(this, view, getAdapterPosition());
+            onClick(view, getAdapterPosition());
+        }
+
+        protected void onClick(View view, int position) {
+            adapter.onItemClick(this, view, item, position);
         }
     }
 
-    public interface OnItemClickListener {
-        void onItemClick(RecyclerView.ViewHolder viewHolder, View view, int position);
+    public interface OnItemClickListener<Item> {
+        void onItemClick(RecyclerView.ViewHolder viewHolder, View view, @Nullable Item item, int position);
     }
 }

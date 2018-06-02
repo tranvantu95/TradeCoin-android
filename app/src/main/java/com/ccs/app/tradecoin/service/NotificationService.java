@@ -1,5 +1,6 @@
 package com.ccs.app.tradecoin.service;
 
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
@@ -8,7 +9,9 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.media.RingtoneManager;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
@@ -16,62 +19,50 @@ import android.support.v4.app.TaskStackBuilder;
 
 import com.ccs.app.tradecoin.activity.MainActivity;
 import com.ccs.app.tradecoin.R;
+import com.ccs.app.tradecoin.app.MyApplication;
+import com.ccs.app.tradecoin.db.AppDatabase;
+import com.ccs.app.tradecoin.db.dao.NotifyDao;
+import com.ccs.app.tradecoin.db.entity.Notify;
+
+import java.util.Date;
 
 public class NotificationService extends Service {
 
-    private MediaPlayer mediaPlayer;
-    private boolean mediaReady;
+    private NotifyDao notifyDao;
 
     @Override
     public void onCreate() {
         super.onCreate();
-
-
-
-    }
-
-    private void createMedia() {
-        mediaPlayer = new MediaPlayer();
-
-        mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-            @Override
-            public void onPrepared(MediaPlayer mp) {
-                mediaReady = true;
-                mediaPlayer.setLooping(true);
-            }
-        });
-
-        try {
-            mediaPlayer.setDataSource(getApplicationContext(), RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION));
-            mediaPlayer.prepare();
-        }
-        catch (Exception ex) {
-            ex.printStackTrace();
-        }
-
-    }
-
-    private boolean playMedia() {
-        if(!mediaReady) return false;
-        mediaPlayer.start();
-        return true;
-    }
-
-    private void pauseMedia() {
-        mediaPlayer.pause();
+        notifyDao = AppDatabase.getInstance(this).getNotifyDao();
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Bundle bundle = intent.getExtras();
         if(bundle != null) {
-            showNotification(bundle);
+            String title = bundle.getString("title");
+            String message = bundle.getString("message");
+            long time = bundle.getLong("time", System.currentTimeMillis());
+
+            saveNotify(title, message, time);
+            showNotification(title, message, time);
+
+            ((MyApplication) getApplication()).playMedia();
         }
 
         return super.onStartCommand(intent, flags, startId);
     }
 
-    private void showNotification(Bundle bundle) {
+    private void saveNotify(String title, String message, long time) {
+        Notify notify = new Notify();
+        notify.setTitle(title);
+        notify.setMessage(message);
+        notify.setTime(time);
+        notify.setRead(false);
+        notifyDao.insertAll(notify);
+    }
+
+    private void showNotification(String title, String message, long time) {
         NotificationManager mNotificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         if(mNotificationManager == null) return;
@@ -96,14 +87,26 @@ public class NotificationService extends Service {
                         PendingIntent.FLAG_UPDATE_CURRENT
                 );
 
-        NotificationCompat.Builder mBuilder =
-                new NotificationCompat.Builder(this)
-                        .setSmallIcon(R.mipmap.ic_launcher)
-                        .setContentTitle(bundle.getString("title"))
-                        .setContentText(bundle.getString("message"))
-                        .setContentIntent(resultPendingIntent)
-                        .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
-                        .setPriority(NotificationCompat.PRIORITY_HIGH);
+
+        String chanelId = "com.ccs.app.tradecoin";
+        String chanelName = "Trade Coin";
+        String channelDescription = "";
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel channel = new NotificationChannel(chanelId, chanelName, NotificationManager.IMPORTANCE_DEFAULT);
+            channel.setDescription(channelDescription);
+            mNotificationManager.createNotificationChannel(channel);
+        }
+
+        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this, chanelId)
+                .setSmallIcon(R.mipmap.ic_launcher)
+                .setContentTitle(title)
+                .setContentText(message)
+                .setContentIntent(resultPendingIntent)
+                .setWhen(time)
+                .setAutoCancel(true)
+                .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+                .setPriority(NotificationCompat.PRIORITY_HIGH);
 
         mBuilder.setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION));
 
@@ -112,7 +115,7 @@ public class NotificationService extends Service {
         mBuilder.setLights(Color.BLUE, 1000, 1000);
 
         // mId allows you to update the notification later on.
-        mNotificationManager.notify((int) (Math.random() * Integer.MAX_VALUE), mBuilder.build());
+        mNotificationManager.notify(1001, mBuilder.build());
     }
 
     @Nullable
