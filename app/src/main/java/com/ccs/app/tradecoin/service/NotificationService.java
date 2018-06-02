@@ -17,6 +17,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
 
+import com.ccs.app.tradecoin.activity.HandlerActivity;
 import com.ccs.app.tradecoin.activity.MainActivity;
 import com.ccs.app.tradecoin.R;
 import com.ccs.app.tradecoin.app.MyApplication;
@@ -68,25 +69,9 @@ public class NotificationService extends Service {
         if(mNotificationManager == null) return;
 
         // Creates an explicit intent for an Activity in your app
-        Intent resultIntent = new Intent(this, MainActivity.class);
-        resultIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-
-        // The stack builder object will contain an artificial back stack for the
-        // started Activity.
-        // This ensures that navigating backward from the Activity leads out of
-        // your application to the Home screen.
-        TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
-        // Adds the back stack for the Intent (but not the Intent itself)
-        stackBuilder.addParentStack(MainActivity.class);
-        // Adds the Intent that starts the Activity to the top of the stack
-        stackBuilder.addNextIntent(resultIntent);
-
-        PendingIntent resultPendingIntent =
-                stackBuilder.getPendingIntent(
-                        0,
-                        PendingIntent.FLAG_UPDATE_CURRENT
-                );
-
+        Intent resultIntent = new Intent(this, HandlerActivity.class);
+        PendingIntent resultPendingIntent = PendingIntent.getActivity(
+                getApplicationContext(), 0, resultIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         String chanelId = "com.ccs.app.tradecoin";
         String chanelName = "Trade Coin";
@@ -108,11 +93,13 @@ public class NotificationService extends Service {
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                 .setPriority(NotificationCompat.PRIORITY_HIGH);
 
-        mBuilder.setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION));
+//        mBuilder.setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION));
+//        mBuilder.setVibrate(new long[] { 1000, 1000, 1000, 1000 });
+//        mBuilder.setLights(Color.BLUE, 1000, 1000);
 
-        mBuilder.setVibrate(new long[] { 1000, 1000, 1000, 1000 });
-
-        mBuilder.setLights(Color.BLUE, 1000, 1000);
+        long[] vibrate = new long[10 * 60];
+        for(int i = 0; i < vibrate.length; i++) vibrate[i] = 1000;
+        mBuilder.setVibrate(vibrate);
 
         // mId allows you to update the notification later on.
         mNotificationManager.notify(1001, mBuilder.build());

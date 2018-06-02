@@ -3,6 +3,7 @@
     package="com.ccs.app.tradecoin">
 
     <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.SET_ALARM" />
 
     <application
         android:name=".app.MyApplication"
@@ -19,6 +20,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity android:name=".activity.HandlerActivity" />
 
         <service android:name=".service.NotificationService" />
 

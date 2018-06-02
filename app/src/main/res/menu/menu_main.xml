@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item android:id="@+id/action_show_sha1"
+        android:title="Show SHA1"
+        app:showAsAction="never"/>
+
+    <item android:id="@+id/action_show_token"
+        android:title="Show Token"
+        app:showAsAction="never"/>
+
+    <item android:id="@+id/action_pause_music"
+        android:title="Stop Music"
+        app:showAsAction="never"/>
+
+</menu>

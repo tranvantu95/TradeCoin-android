@@ -2,6 +2,8 @@ package com.ccs.app.tradecoin.utils;
 
 import android.app.ActivityManager;
 import android.appwidget.AppWidgetManager;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -24,6 +26,15 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 public class AppUtils {
+
+    //
+    public static void copyText(Context context, String text) {
+        ClipboardManager clipboard = (ClipboardManager)
+                context.getSystemService(Context.CLIPBOARD_SERVICE);
+        if(clipboard == null) return;
+        ClipData clip = ClipData.newPlainText("simple text", text);
+        clipboard.setPrimaryClip(clip);
+    }
 
     // resources
     public static Bitmap getBitmapFromVectorDrawable(Resources resources, int resId) {

@@ -3,10 +3,14 @@ package com.ccs.app.tradecoin.app;
 import android.app.Application;
 import android.content.SharedPreferences;
 import android.media.MediaPlayer;
+import android.media.Ringtone;
 import android.media.RingtoneManager;
+import android.net.Uri;
+import android.os.Handler;
 import android.support.v7.app.AppCompatDelegate;
 import android.util.Log;
 
+import com.ccs.app.tradecoin.R;
 import com.ccs.app.tradecoin.config.AppConfig;
 import com.ccs.app.tradecoin.config.Debug;
 import com.ccs.app.tradecoin.model.base.SwitchListModel;
@@ -19,7 +23,10 @@ public class MyApplication extends Application {
     public static final String DATA = AppConfig.APP_DATA;
 
     private MediaPlayer mediaPlayer;
-    private boolean isPlayMedia;
+
+    private Handler handler;
+
+    private Runnable runnable;
 
     @Override
     public void onCreate() {
@@ -34,37 +41,29 @@ public class MyApplication extends Application {
         General.typeView = sharedPreferences.getInt(General.TYPE_VIEW, SwitchListModel.LIST);
 
         //
-        createMedia();
-    }
+        mediaPlayer = MediaPlayer.create(this, R.raw.alert2);
+        mediaPlayer.setLooping(true);
+//        playMedia();
 
-    private void createMedia() {
-        mediaPlayer = new MediaPlayer();
+        handler = new Handler();
 
-        mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+        runnable = new Runnable() {
             @Override
-            public void onPrepared(MediaPlayer mp) {
-                mediaPlayer.setLooping(true);
-                if(isPlayMedia) mediaPlayer.start();
+            public void run() {
+                pauseMedia();
             }
-        });
-
-        try {
-            mediaPlayer.setDataSource(getApplicationContext(), RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION));
-            mediaPlayer.prepare();
-        }
-        catch (Exception ex) {
-            ex.printStackTrace();
-        }
+        };
     }
 
     public void playMedia() {
-        isPlayMedia = true;
         mediaPlayer.start();
+        handler.removeCallbacks(runnable);
+        handler.postDelayed(runnable, 10*60*1000);
     }
 
     public void pauseMedia() {
-        isPlayMedia = false;
         mediaPlayer.pause();
+        handler.removeCallbacks(runnable);
     }
 
 }

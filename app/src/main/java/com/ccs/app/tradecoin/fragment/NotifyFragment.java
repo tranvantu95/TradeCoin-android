@@ -2,6 +2,7 @@ package com.ccs.app.tradecoin.fragment;
 
 import android.arch.paging.PagedList;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
@@ -17,6 +18,8 @@ import com.ccs.app.tradecoin.fragment.base.ListFragment;
 import com.ccs.app.tradecoin.item.NotifyItem;
 import com.ccs.app.tradecoin.model.NotifyModel;
 
+import java.util.List;
+
 public class NotifyFragment extends ListFragment<NotifyItem, NotifyModel, NotifyAdapter> {
 
     private NotifyDao notifyDao;
@@ -28,6 +31,18 @@ public class NotifyFragment extends ListFragment<NotifyItem, NotifyModel, Notify
         notifyDao = AppDatabase.getInstance(getContext()).getNotifyDao();
 
         setDataSourceFactory(notifyDao.getAllByTime());
+    }
+
+    @Override
+    protected void updateListAdapter(@NonNull List<NotifyItem> notifyItems) {
+        boolean hasNewItem = notifyItems.size() > listAdapter.getItemCount();
+        super.updateListAdapter(notifyItems);
+        if(hasNewItem) new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                listView.smoothScrollToPosition(0);
+            }
+        }, 600);
     }
 
     @Override
@@ -60,8 +75,10 @@ public class NotifyFragment extends ListFragment<NotifyItem, NotifyModel, Notify
             @Override
             public void onItemClick(RecyclerView.ViewHolder viewHolder, View view, @Nullable NotifyItem item, int position) {
                 if (item != null) {
-                    item.setRead(true);
-                    notifyDao.updateAll(item);
+                    if(!item.isRead()) {
+                        item.setRead(true);
+                        notifyDao.updateAll(item);
+                    }
                 }
             }
         });
