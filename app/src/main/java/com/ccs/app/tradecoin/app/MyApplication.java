@@ -41,18 +41,18 @@ public class MyApplication extends Application {
         General.typeView = sharedPreferences.getInt(General.TYPE_VIEW, SwitchListModel.LIST);
 
         //
-        mediaPlayer = MediaPlayer.create(this, R.raw.alert2);
-        mediaPlayer.setLooping(true);
-//        playMedia();
-
-        handler = new Handler();
-
-        runnable = new Runnable() {
-            @Override
-            public void run() {
-                pauseMedia();
-            }
-        };
+//        mediaPlayer = MediaPlayer.create(this, R.raw.alert2);
+//        mediaPlayer.setLooping(true);
+////        playMedia(); // test
+//
+//        handler = new Handler();
+//
+//        runnable = new Runnable() {
+//            @Override
+//            public void run() {
+//                pauseMedia();
+//            }
+//        };
     }
 
     public void playMedia() {

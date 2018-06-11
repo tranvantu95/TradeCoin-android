@@ -10,8 +10,8 @@
         android:title="Show Token"
         app:showAsAction="never"/>
 
-    <item android:id="@+id/action_pause_music"
-        android:title="Stop Music"
-        app:showAsAction="never"/>
+    <!--<item android:id="@+id/action_pause_music"-->
+        <!--android:title="Stop Music"-->
+        <!--app:showAsAction="never"/>-->
 
 </menu>

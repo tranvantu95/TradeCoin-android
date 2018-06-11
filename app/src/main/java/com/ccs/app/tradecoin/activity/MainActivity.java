@@ -77,9 +77,9 @@ public class MainActivity extends BaseActivity {
                 showTokenDialog();
                 return true;
 
-            case R.id.action_pause_music:
-                ((MyApplication) getApplication()).pauseMedia();
-                return true;
+//            case R.id.action_pause_music:
+////                ((MyApplication) getApplication()).pauseMedia();
+//                return true;
         }
 
         return super.onOptionsItemSelected(item);

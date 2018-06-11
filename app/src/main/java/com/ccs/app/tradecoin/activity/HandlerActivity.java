@@ -14,7 +14,7 @@ public class HandlerActivity extends BaseActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        ((MyApplication) getApplication()).pauseMedia();
+//        ((MyApplication) getApplication()).pauseMedia();
 
         if(isTaskRoot()) {
             Intent intent = new Intent(this, MainActivity.class);

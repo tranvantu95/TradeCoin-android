@@ -1,5 +1,6 @@
 package com.ccs.app.tradecoin.service;
 
+import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -9,6 +10,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -48,7 +50,7 @@ public class NotificationService extends Service {
             saveNotify(title, message, time);
             showNotification(title, message, time);
 
-            ((MyApplication) getApplication()).playMedia();
+//            ((MyApplication) getApplication()).playMedia();
         }
 
         return super.onStartCommand(intent, flags, startId);
@@ -97,12 +99,18 @@ public class NotificationService extends Service {
 //        mBuilder.setVibrate(new long[] { 1000, 1000, 1000, 1000 });
 //        mBuilder.setLights(Color.BLUE, 1000, 1000);
 
+        mBuilder.setSound(Uri.parse("android.resource://"+getPackageName()+"/raw/alert2"));
+
         long[] vibrate = new long[10 * 60];
         for(int i = 0; i < vibrate.length; i++) vibrate[i] = 1000;
         mBuilder.setVibrate(vibrate);
 
+        Notification notification = mBuilder.build();
+
+        notification.flags |= Notification.FLAG_INSISTENT; // loop sound
+
         // mId allows you to update the notification later on.
-        mNotificationManager.notify(1001, mBuilder.build());
+        mNotificationManager.notify(1001, notification);
     }
 
     @Nullable
